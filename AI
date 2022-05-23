@@ -1,0 +1,353 @@
+*********************************************************** Assignment 1
+# BFS and DFS
+
+def bfs(graph, root):
+    v1 = set()
+    q = []
+    q.append(root)
+    q.extend(graph[root])
+
+    while q:
+        v2 = q.pop(0)
+        if v2 not in v1:
+            v1.add(v2)
+            print(v2)
+        for adj in graph[v2]:
+            if adj not in v1:
+                q.append(adj)
+                
+
+def dfs(visited, graph, root):
+    if root not in visited:
+        visited.add(root)
+        print(root, " ")
+
+        for adj in graph[root]:
+            dfs(visited, graph, adj)
+
+
+# graph = { 1: [3, 2], 2: [1, 4],  3: [1], 4: [2] }
+graph = {0: [1, 2, 3], 1: [0], 2: [0, 3, 4, 5], 3: [0, 2], 4: [2, 5], 5: [2, 4]}
+visited = set() 
+
+print("Bfs: ")
+bfs(graph, 0)
+print()
+print("Dfs: ")
+dfs(visited, graph, 1)
+Bfs: 
+0
+1
+2
+3
+4
+5
+
+Dfs: 
+1  
+0  
+2  
+3  
+4  
+5  
+
+
+ ********************************************** Assignment 2
+# A Star Algorithm
+
+def aStarAlgo(start_node, stop_node):
+    open_set = set(start_node)
+    closed_set = set()
+    g = {}
+    parents = {} 
+
+    g[start_node] = 0
+
+    parents[start_node] = start_node
+    while len(open_set) > 0:
+        n = None
+
+        for v in open_set:
+            if n == None or g[v] + heuristic(v) < g[n] + heuristic(n):
+                n = v
+        if n == stop_node or Graph_nodes[n] == None:
+            pass
+        else:
+            for (m, weight) in get_neighbors(n):
+               
+                if m not in open_set and m not in closed_set:
+                    open_set.add(m)
+                    parents[m] = n
+                    g[m] = g[n] + weight
+                else:
+                    if g[m] > g[n] + weight:
+                        g[m] = g[n] + weight
+                        parents[m] = n
+                        if m in closed_set:
+                            closed_set.remove(m)
+                            open_set.add(m)
+        if n == None:
+            print('Path does not exist!')
+            return None
+        
+        if n == stop_node:
+            path = []
+            while parents[n] != n:
+                path.append(n)
+                n = parents[n]
+            path.append(start_node)
+            path.reverse()
+            print('Path found: {}'.format(path))
+            return path
+
+        open_set.remove(n)
+        closed_set.add(n)
+    print('Path does not exist!')
+    return None
+
+def get_neighbors(v):
+    if v in Graph_nodes:
+        return Graph_nodes[v]
+    else:
+        return None
+
+def heuristic(n):
+    H_dist = {
+        'A': 11,
+        'B': 6,
+        'C': 5,
+        'D': 7,
+        'E': 3,
+        'F': 6,
+        'G': 5,
+        'H': 3,
+        'I': 1,
+        'J': 0
+    }
+    return H_dist[n]
+
+#Describe your graph here
+Graph_nodes = {
+    'A': [('B', 6), ('F', 3)],
+    'B': [('A', 6), ('C', 3), ('D', 2)],
+    'C': [('B', 3), ('D', 1), ('E', 5)],
+    'D': [('B', 2), ('C', 1), ('E', 8)],
+    'E': [('C', 5), ('D', 8), ('I', 5), ('J', 5)],
+    'F': [('A', 3), ('G', 1), ('H', 7)],
+    'G': [('F', 1), ('I', 3)],
+    'H': [('F', 7), ('I', 2)],
+    'I': [('E', 5), ('G', 3), ('H', 2), ('J', 3)],
+}
+
+aStarAlgo('A', 'J')
+Path found: ['A', 'F', 'G', 'I', 'J']
+['A', 'F', 'G', 'I', 'J']
+
+
+******************************************************* Assignment 3
+# Greedy Search Methods
+
+
+# Selection Sort
+def selection():
+	A = [64, 25, 12, 22, 11]
+	n = len(A)
+
+	for i in range(len(A)):
+		
+		min_idx = i
+		for j in range(i+1, len(A)):
+			if A[min_idx] > A[j]:
+				min_idx = j	
+		A[i], A[min_idx] = A[min_idx], A[i]
+
+	# Driver code to test above
+	print(A)
+
+selection()
+
+
+
+# Dijkstra
+
+import sys
+class Graph():
+	def _init_(self, vertices):
+		self.V = vertices
+		self.graph = [[0 for column in range(vertices)]
+					for row in range(vertices)]
+					
+	def printSolution(self, dist):
+		print("Vertex \tDistance from Source")
+		for node in range(self.V):
+			print(node, "\t", dist[node])
+
+	def minDistance(self, dist, sptSet):
+		min = sys.maxsize
+		for u in range(self.V):
+			if dist[u] < min and sptSet[u] == False:
+				min = dist[u]
+				min_index = u
+		return min_index
+
+	def dijkstra(self, src):
+		dist = [sys.maxsize] * self.V
+		dist[src] = 0
+		sptSet = [False] * self.V
+		for cout in range(self.V):
+			x = self.minDistance(dist, sptSet)
+			sptSet[x] = True
+			for y in range(self.V):
+				if self.graph[x][y] > 0 and sptSet[y] == False and \
+				dist[y] > dist[x] + self.graph[x][y]:
+						dist[y] = dist[x] + self.graph[x][y]
+		self.printSolution(dist)
+
+
+g = Graph(9)
+g.graph=[[0, 2, 0, 0, 0, 0, 0, 8, 0],
+		[2, 0, 8, 0, 0, 0, 0, 11, 0],
+		[0, 8, 0, 7, 0, 4, 0, 0, 2],
+		[0, 0, 7, 0, 9, 14, 0, 0, 0],
+		[0, 0, 0, 9, 0, 10, 0, 0, 0],
+		[0, 0, 4, 14, 10, 0, 2, 0, 0],
+		[0, 0, 0, 0, 0, 2, 0, 1, 6],
+		[8, 11, 0, 0, 0, 0, 1, 0, 7],
+		[0, 0, 2, 0, 0, 0, 6, 7, 0]
+		]
+
+g.dijkstra(0)
+
+
+*****************************************************************Assignment 4
+# N Queen 
+
+def queen(n):
+    def backTrack(i):
+        if i == n:
+            result.append(list(board))
+            
+        
+        for j in range(n):
+
+            if j not in column and j-i not in diagonal and j+i not in ofDiagonal:
+                column.add(j)
+                diagonal.add(j-i)
+                ofDiagonal.add(j+i)
+                board.append("-" * j + "Q" + "-" * (n-j-1))
+                backTrack(i+1)
+                
+                column.remove(j)
+                diagonal.remove(j-i)
+                ofDiagonal.remove(j+i)
+                board.pop()
+                
+    result = []
+    board = []
+    column = set()
+    diagonal = set()
+    ofDiagonal = set()
+
+    backTrack(0)
+    return result
+
+
+v1 = int(input("Enter Num: "))
+v2 = queen(v1)
+# for p in v2:
+#     for i in p:
+#         for j in i:
+#             print(j, end=" ")
+#         print()
+#     print("\n")
+
+for i in v2[0]:
+    for j in i:
+        print(j,end=" ")
+    print()
+- Q - - 
+- - - Q 
+Q - - - 
+- - Q - 
+
+*******************************************************************Assignment 5
+# Chat Bot
+
+def greet(bot_name, birth_year):
+    print("Hello! My name is {0}.".format(bot_name))
+    print("I was created in {0}.".format(birth_year))
+
+
+def remind_name():
+    print('Please, Tell me what is your name. ')
+    name = input()
+    print("What a great name you have, {0}!".format(name))
+
+
+def guess_age():
+    print('Let me guess your age. ')
+    print('Enter remainders of dividing your age by 3, 5 and 7.')
+    rem3 = int(input())
+    rem5 = int(input())
+    rem7 = int(input())
+    age = (rem3 * 70 + rem5 * 21 + rem7 * 15) % 105
+    print("Your age is {0} that's a good time to start programming!".format(age))
+
+
+def count():
+    print('Now I will prove to you that I can count to any number you want.')
+    num = int(input())
+    counter = 0
+    while counter <= num:
+        print("{0} !".format(counter))
+        counter += 1
+
+
+def test():
+    print("Let's test your programming knowledge.")
+    print("Why do we use methods?")
+    print("1. To repeat a statement multiple times.")
+    print("2. To decompose a program into several small subroutines.")
+    print("3. To determine the execution time of a program.")
+    print("4. To interrupt the execution of a program.")
+    answer = 2
+    guess = int(input())
+    while guess != answer:
+        print("Please, try again.")
+        guess = int(input())
+        print('.................................')
+        print('Completed, have a nice day!')
+        print('.................................')
+def end():
+    print('.................................')
+    print('Congratulations, have a nice day!')
+    print('.................................')
+    # input()
+
+greet('Shadow', '2022')
+remind_name()
+guess_age()
+count()
+test()
+end()
+Hello! My name is Shadow.
+I was created in 2022.
+Please, Tell me what is your name. 
+What a great name you have, Omkar!
+Let me guess your age. 
+Enter remainders of dividing your age by 3, 5 and 7.
+Your age is 21 that's a good time to start programming!
+Now I will prove to you that I can count to any number you want.
+0 !
+1 !
+2 !
+3 !
+Let's test your programming knowledge.
+Why do we use methods?
+1. To repeat a statement multiple times.
+2. To decompose a program into several small subroutines.
+3. To determine the execution time of a program.
+4. To interrupt the execution of a program.
+.................................
+Congratulations, have a nice day!
+.................................
